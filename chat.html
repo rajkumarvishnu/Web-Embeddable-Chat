@@ -1,10 +1,11 @@
-
-
 <div id="chat-container"></div>
 <script src="./chatwindow.js"></script>
 <script>
-    const chat = new ChatWindow('chat-container', {
-        title: 'Customer Support',
-        websocketUrl: 'ws://localhost:8080'
-    });
+	const chatWindow = new ChatWindow("chat-container", {
+		title: "Support Chat",
+		width: "350px",
+		height: "550px",
+		//position: "bottom-right",
+		websocketUrl: "ws://localhost:8080",
+	});
 </script>

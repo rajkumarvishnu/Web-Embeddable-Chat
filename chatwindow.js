@@ -5,9 +5,8 @@ class ChatWindow {
 		this.container = document.getElementById(containerId);
 		this.options = {
 			title: options.title || "Chat Window",
-			width: options.width || "300px",
+			width: options.width || "350px",
 			height: options.height || "400px",
-			position: options.position || "bottom-right",
 			websocketUrl: options.websocketUrl || "ws://localhost:8080",
 		};
 		this.messages = [];
@@ -21,7 +20,7 @@ class ChatWindow {
         width: ${this.options.width};
         height: ${this.options.height};
         position: fixed;
-        ${this.options.position}: 20px;
+        right: 20px;
         bottom: 20px;
         background-color: #fff;
         border-radius: 10px;
@@ -29,6 +28,7 @@ class ChatWindow {
         box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
         display: flex;
         flex-direction: column;
+        z-index: 1000;
       ">
         <div class="chat-header" style="
           background-color: #4CAF50;
