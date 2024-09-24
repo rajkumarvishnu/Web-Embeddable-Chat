@@ -5,7 +5,7 @@ This `README.md` file provides a comprehensive guide on how to use the `ChatWind
 node server.js  
 Open chat.html in a browser
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 # Chat Window
 
