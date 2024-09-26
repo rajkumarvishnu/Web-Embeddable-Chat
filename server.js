@@ -19,6 +19,8 @@ wss.on("connection", (ws) => {
 
 	ws.on("message", async (message) => {
 		console.log("Received:", message);
+		// Server-side code
+		ws.send(JSON.stringify({ type: "typing", isTyping: true }));
 
 		// Parse the incoming message
 		const parsedMessage = JSON.parse(message);
@@ -49,6 +51,7 @@ wss.on("connection", (ws) => {
 			const apiResponse = await response.json();
 			console.log(apiResponse);
 			resp = apiResponse.output[0].message;
+			ws.send(JSON.stringify({ type: "typing", isTyping: false }));
 
 			// Send the API response back to the WebSocket client
 			ws.send(
@@ -59,6 +62,8 @@ wss.on("connection", (ws) => {
 			);
 		} catch (error) {
 			console.error("Error making API call:", error);
+			ws.send(JSON.stringify({ type: "typing", isTyping: true }));
+
 			ws.send(
 				JSON.stringify({
 					sender: "bot",

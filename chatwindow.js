@@ -10,6 +10,8 @@ class ChatWindow {
 			websocketUrl: options.websocketUrl || "ws://localhost:8080",
 		};
 		this.messages = [];
+		this.isTyping = false;
+		this.typingAnimationInterval = null;
 		this.render();
 		this.connectWebSocket();
 	}
@@ -47,6 +49,14 @@ class ChatWindow {
           padding: 15px;
           background-color: #f5f5f5;
         "></div>
+        <div class="typing-indicator" style="
+          padding: 10px;
+          font-style: italic;
+          color: #666;
+          display: none;
+        ">
+          Bot is typing<span class="typing-dots"></span>
+        </div>
         <div class="chat-input" style="
           padding: 15px;
           background-color: #fff;
@@ -75,6 +85,9 @@ class ChatWindow {
     `;
 
 		this.messageContainer = this.container.querySelector(".chat-messages");
+		this.typingIndicator =
+			this.container.querySelector(".typing-indicator");
+		this.typingDots = this.container.querySelector(".typing-dots");
 		this.input = this.container.querySelector("input");
 		this.sendButton = this.container.querySelector("button");
 
@@ -102,7 +115,11 @@ class ChatWindow {
 
 		this.socket.onmessage = (event) => {
 			const message = JSON.parse(event.data);
-			this.addMessage(message.sender, message.text);
+			if (message.type === "typing") {
+				this.setTypingIndicator(message.isTyping);
+			} else {
+				this.addMessage(message.sender, message.text);
+			}
 		};
 
 		this.socket.onclose = () => {
@@ -133,6 +150,7 @@ class ChatWindow {
 	addMessage(sender, text) {
 		this.messages.push({ sender, text });
 		this.updateMessages();
+		this.setTypingIndicator(false);
 	}
 
 	updateMessages() {
@@ -170,6 +188,33 @@ class ChatWindow {
 			)
 			.join("");
 		this.messageContainer.scrollTop = this.messageContainer.scrollHeight;
+	}
+
+	setTypingIndicator(isTyping) {
+		this.isTyping = isTyping;
+		this.typingIndicator.style.display = isTyping ? "block" : "none";
+		if (isTyping) {
+			this.messageContainer.scrollTop =
+				this.messageContainer.scrollHeight;
+			this.startTypingAnimation();
+		} else {
+			this.stopTypingAnimation();
+		}
+	}
+
+	startTypingAnimation() {
+		let dotCount = 0;
+		this.typingAnimationInterval = setInterval(() => {
+			dotCount = (dotCount + 1) % 4;
+			this.typingDots.textContent = ".".repeat(dotCount);
+		}, 500);
+	}
+
+	stopTypingAnimation() {
+		if (this.typingAnimationInterval) {
+			clearInterval(this.typingAnimationInterval);
+			this.typingAnimationInterval = null;
+		}
 	}
 }
 
