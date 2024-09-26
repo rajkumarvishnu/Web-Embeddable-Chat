@@ -2,6 +2,7 @@
 
 const http = require("http");
 const WebSocket = require("ws");
+require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
 
 const server = http.createServer((req, res) => {
@@ -19,14 +20,6 @@ wss.on("connection", (ws) => {
 	ws.on("message", async (message) => {
 		console.log("Received:", message);
 
-		//get the senders info and console log it
-		const sender = ws._socket.remoteAddress;
-
-		console.log(sender);
-		//get a unique identifier or signature for the sender not a remote port
-		const signature = ws._socket.remotePort;
-		console.log(signature);
-
 		// Parse the incoming message
 		const parsedMessage = JSON.parse(message);
 
@@ -35,25 +28,23 @@ wss.on("connection", (ws) => {
 
 		// Make the API call
 		try {
-			const response = await fetch(
-				"https://YOUR DOMAIN/copilot/orchestrator-be/execute_workflow",
-				{
-					method: "POST",
-					headers: {
-						accept: "application/json",
-						"api-key": "YOUR KEY",
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						endpoint: "a9cd874d-009b-48af-8b81-19d906dd3fa9",
-						input_value: parsedMessage.text,
-						session_id: ws.id,
-						input_type: "chat",
-						output_type: "chat",
-						tweaks: {},
-					}),
-				}
-			);
+			console.log(process.env.API_KEY);
+			const response = await fetch(process.env.URI, {
+				method: "POST",
+				headers: {
+					accept: "application/json",
+					"api-key": process.env.API_KEY,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					endpoint: process.env.ENDPOINT,
+					input_value: parsedMessage.text,
+					session_id: ws.id,
+					input_type: "chat",
+					output_type: "chat",
+					tweaks: {},
+				}),
+			});
 
 			const apiResponse = await response.json();
 			console.log(apiResponse);
